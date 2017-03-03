@@ -73,9 +73,6 @@ func main() {
 			cmdstr := configuration.CommandMap[cmdstr].Command
 
 			log.Printf("Found cmd for : %s -> %s", cmdstr, cmdargs)
-			for _, arg := range cmdargs {
-				log.Println(arg)
-			}
 			cmd := exec.Command(cmdstr, cmdargs...)
 			var out bytes.Buffer
 			cmd.Stdout = &out
