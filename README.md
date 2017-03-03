@@ -16,13 +16,31 @@ go build github.com/r3ek0/httpcommander
 Run
 ---
 ```
-./httpcommander httpcommander.conf
+./httpcommander config-examples/test.conf
+```
+
+Run with TLS
+-------------------------
+```
+./httpcommander config-examples/test-tls.conf
 ```
 
 Run with x509 client auth
 -------------------------
 
 You can use the httpcommander with x509 client auth.
-To create the CA, you can use https://github.com/r3ek0/cluster-ca
-
 Client auth is automatically enabled as soon as you specify a ca-file to validate the client certs. Simply adjust the config accordingly.
+
+To test this:
+```
+./httpcommander config-examples/test-client-auth.conf
+```
+and then you can do
+```
+curl -k --key x509/client-tester.key \
+        --cert x509/client-tester.crt \
+        https://localhost:8989/cmd/echotest
+```
+
+To create a CA, you can use https://github.com/r3ek0/cluster-ca
+
