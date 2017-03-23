@@ -32,7 +32,8 @@ func main() {
 
 	args := os.Args[1:]
 	if len(args) < 1 {
-		panic("missing comandline arg for configfile.")
+		log.Println("missing comandline arg for configfile.")
+		os.Exit(1)
 	}
 
 	log.Println("using config: " + args[0])
@@ -64,7 +65,7 @@ func main() {
 	} else {
 		useclientauth = false
 	}
-
+	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	router.GET("/cmd/:cmd", func(c *gin.Context) {
 		cmdstr := c.Param("cmd")
@@ -79,13 +80,18 @@ func main() {
 			cmd.Stdout = &out
 			err := cmd.Run()
 			if err != nil {
-				log.Fatal(err)
-			}
-			c.JSON(200, gin.H{
-				"cmd":    c.Param("cmd"),
-				"output": out.String(),
-			})
+				log.Println(err)
+				c.JSON(500, gin.H{
+					"cmd":    c.Param("cmd"),
+					"output": err.Error(),
+				})
+			} else {
+				c.JSON(200, gin.H{
+					"cmd":    c.Param("cmd"),
+					"output": out.String(),
+				})
 
+			}
 		} else {
 			c.JSON(404, gin.H{
 				"cmd":    c.Param("cmd"),
@@ -113,6 +119,7 @@ func main() {
 				ClientCAs:  caCertPool,
 			},
 		}
+		log.Printf("Starting tls server with auth on %s\n", configuration.ListenAddress)
 		err = server.ListenAndServeTLS(
 			tlscert,
 			tlskey)
@@ -122,9 +129,10 @@ func main() {
 	} else {
 
 		if usetls {
+			log.Printf("Starting tls server. Listen on %s\n", configuration.ListenAddress)
 			router.RunTLS(configuration.ListenAddress, tlscert, tlskey)
 		} else {
-
+			log.Printf("Starting server. Listen on %s\n", configuration.ListenAddress)
 			router.Run(configuration.ListenAddress)
 		}
 	}
