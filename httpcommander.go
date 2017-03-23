@@ -35,6 +35,7 @@ func main() {
 		panic("missing comandline arg for configfile.")
 	}
 
+	log.Println("using config: " + args[0])
 	configfile, _ := os.Open(args[0])
 	decoder := json.NewDecoder(configfile)
 	configuration := Configuration{}

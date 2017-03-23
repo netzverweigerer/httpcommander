@@ -44,3 +44,12 @@ curl -k --key x509/client-tester.key \
 
 To create a CA, you can use https://github.com/r3ek0/cluster-ca
 
+Build standalone binary for docker image
+-------------------------------------------
+```
+CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-s -w' .
+docker build -t httpcommander:myversion .
+docker run --rm --name httpcommander \
+    -v $(pwd):/conf \
+    httpcommander:myversion /conf/test.conf
+```
